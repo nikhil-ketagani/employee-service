@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.nikhil.employeeservice.dto.EmployeeDto;
 import com.nikhil.employeeservice.entity.Employee;
+import com.nikhil.employeeservice.execption.ResourceNotFoundException;
 import com.nikhil.employeeservice.mapper.EmployeeMapper;
 import com.nikhil.employeeservice.repository.EmployeeRepository;
 import com.nikhil.employeeservice.service.EmployeeService;
@@ -49,7 +50,9 @@ ModelMapper modelMapper;
 	}
 	@Override
 	public EmployeeDto getEmpoloyee(Long employeeId) {
-		Employee employee = employeeRepository.findById(employeeId).get();
+		Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
+		
+		Employee employee = employeeOptional.orElseThrow(()->  new ResourceNotFoundException("Employee","employeeId", employeeId));
 		//convert saved JPA entity back to DTO
 //		EmployeeDto employeeDto = new EmployeeDto(
 //				employee.getId(),
