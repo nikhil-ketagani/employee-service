@@ -15,6 +15,7 @@ import com.nikhil.employeeservice.entity.Employee;
 import com.nikhil.employeeservice.execption.ResourceNotFoundException;
 import com.nikhil.employeeservice.mapper.EmployeeMapper;
 import com.nikhil.employeeservice.repository.EmployeeRepository;
+import com.nikhil.employeeservice.service.ApiClient;
 import com.nikhil.employeeservice.service.EmployeeService;
 
 import lombok.AllArgsConstructor;
@@ -23,10 +24,11 @@ import reactor.core.publisher.Mono;
 @Service
 @AllArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
-EmployeeRepository employeeRepository;
-RestTemplate restTemplate;
-ModelMapper modelMapper;
-WebClient webClient;
+private EmployeeRepository employeeRepository;
+private RestTemplate restTemplate;
+private ModelMapper modelMapper;
+private WebClient webClient;
+private ApiClient feignClient;
 	@Override
 	public EmployeeDto saveEmployee(EmployeeDto employeeDto) {
 		//convert Employee DTO to Employee JPA entity
@@ -78,10 +80,11 @@ WebClient webClient;
 //		ResponseEntity<DepartmentDto> response = restTemplate.getForEntity("http://localhost:8080/v1/departments/"+employee.getDepartmentCode(), DepartmentDto.class);
 //		 departmentDto = response.getBody();
 		//use webclient to call department service
-		 departmentDto = webClient.get().uri("http://localhost:8080/v1/departments/"+employee.getDepartmentCode())
-		.retrieve()
-		.bodyToMono(DepartmentDto.class)
-		.block();
+//		 departmentDto = webClient.get().uri("http://localhost:8080/v1/departments/"+employee.getDepartmentCode())
+//		.retrieve()
+//		.bodyToMono(DepartmentDto.class)
+//		.block();
+		 departmentDto = feignClient.getDepartment(employeeDto.getDepartmentCode());
 			
 		}
 		ApiResponseDto apiResponseDto = ApiResponseDto.builder().departmentDto(departmentDto).employeeDto(employeeDto).build();
